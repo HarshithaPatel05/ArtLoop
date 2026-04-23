@@ -30,7 +30,7 @@ const registerUser = async (req, res) => {
       name,
       email,
       password,
-      role: role || 'user',
+      role: role || 'customer',
     });
 
     res.status(201).json({
