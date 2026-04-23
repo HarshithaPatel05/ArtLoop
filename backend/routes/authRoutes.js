@@ -9,20 +9,26 @@ router.post('/register', async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
+    if (!name || !email || !password) {
+      return res.status(400).json({ msg: 'Please provide name, email and password' });
+    }
+
     // Check user exists
     let user = await User.findOne({ email });
     if (user) {
       return res.status(400).json({ msg: 'User already exists' });
     }
 
-    // Create user
-    user = new User({ name, email, password, role });
+    // Validate role
+    const validRoles = ['customer', 'artisan', 'admin'];
+    const userRole = validRoles.includes(role) ? role : 'customer';
 
     // Hash password
     const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    await user.save();
+    // Create user with hashed password directly (no pre-save hook)
+    user = await User.create({ name, email, password: hashedPassword, role: userRole });
 
     // Create token
     const token = jwt.sign(
@@ -31,11 +37,11 @@ router.post('/register', async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    res.json({ token });
+    res.json({ token, _id: user._id, name: user.name, email: user.email, role: user.role });
 
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    console.error('[REGISTER ERROR]', err.message, err.stack);
+    res.status(500).json({ msg: 'Server error', detail: err.message });
   }
 });
 
@@ -43,6 +49,10 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ msg: 'Please provide email and password' });
+    }
 
     let user = await User.findOne({ email });
     if (!user) {
@@ -60,11 +70,11 @@ router.post('/login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    res.json({ token });
+    res.json({ token, _id: user._id, name: user.name, email: user.email, role: user.role });
 
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    console.error('[LOGIN ERROR]', err.message, err.stack);
+    res.status(500).json({ msg: 'Server error', detail: err.message });
   }
 });
 
