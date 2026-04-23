@@ -1,11 +1,6 @@
 # 🎨 ArtLoop - Connecting Hands to Homes
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-View_Website-success?style=for-the-badge)](https://artloop-marketplace.vercel.app/) <!-- Replace this link with your actual live URL -->
-
 ArtLoop is a premium full-stack MERN e-commerce marketplace dedicated to empowering rural Indian artisans. It provides a platform where authentic handcrafted art, jewelry, handloom, and tribal crafts can be sold directly to global customers, ensuring fair trade and preserving cultural heritage.
-
-## 🚀 Live Project
-**Live URL:** [https://artloop-marketplace.vercel.app/](https://artloop-marketplace.vercel.app/)  *(Update this with your actual deployed link)*
 
 ---
 
