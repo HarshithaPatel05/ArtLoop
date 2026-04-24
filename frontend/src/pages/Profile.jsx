@@ -1,9 +1,9 @@
-import React from 'react';
-import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
-import { User, Package, Heart, LogOut } from 'lucide-react';
+import React from 'react';//component used in my-profile page
+import { useAuth } from '../context/AuthContext';//used to get the user data
+import { Link } from 'react-router-dom';//to navigate to different pages
+import { User, Package, Heart, LogOut } from 'lucide-react';//icons used in the profile page
 
-const Profile = () => {
+const Profile = () => {// profile page component
   const { user, logout } = useAuth();
 
   return (

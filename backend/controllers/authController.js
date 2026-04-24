@@ -20,15 +20,15 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: 'Please fill all fields' });
     }
 
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ email });//check if user already exists
 
     if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ message: 'User already exists' });//if user exists return error
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
+    const salt = await bcrypt.genSalt(10);//generate salt
+    const hashedPassword = await bcrypt.hash(password, salt);//hash password
+    
     const user = await User.create({
       name,
       email,
