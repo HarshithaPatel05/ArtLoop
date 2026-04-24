@@ -130,7 +130,6 @@ const AdminPanel = () => {
     `${r.comment || ''} ${r.user?.name || ''} ${r.product?.name || ''}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-
   return (
     <div className="min-h-screen bg-artloop-earth py-12">
       <div className="container mx-auto px-6">
@@ -181,9 +180,9 @@ const AdminPanel = () => {
                  <table className="w-full">
                     <thead>
                        <tr className="text-left text-xs font-bold text-gray-400 uppercase border-b border-gray-50">
-                          <th className="py-4 px-4">Name/Details</th>
-                          <th className="py-4 px-4">Status</th>
-                          <th className="py-4 px-4">Role</th>
+                          <th className="py-4 px-4">{activeTab === 'reviews' ? 'Comment' : 'Name/Details'}</th>
+                          <th className="py-4 px-4">{activeTab === 'reviews' ? 'Rating' : activeTab === 'orders' ? 'Status' : 'Status/Stock'}</th>
+                          <th className="py-4 px-4">{activeTab === 'reviews' ? 'Product' : activeTab === 'orders' ? 'Payment' : 'Role/Category'}</th>
                           <th className="py-4 px-4 text-right">Actions</th>
                        </tr>
                     </thead>
@@ -326,9 +325,26 @@ const AdminPanel = () => {
                                 </div>
                               </td>
                             </tr>
-                          )
-
+                         )
                        }
+                       
+                       {/* EMPTY STATE MESSAGE */}
+                       {activeTab !== 'analytics' && (
+                          (activeTab === 'users' && filteredUsers.length === 0) ||
+                          (activeTab === 'artisans' && filteredUsers.filter(u => u.role === 'artisan').length === 0) ||
+                          (activeTab === 'products' && filteredProducts.length === 0) ||
+                          (activeTab === 'orders' && filteredOrders.length === 0) ||
+                          (activeTab === 'reviews' && filteredReviews.length === 0)
+                       ) && (
+                          <tr>
+                             <td colSpan={4} className="py-20 text-center text-gray-400">
+                                <div className="flex flex-col items-center">
+                                   <Search className="w-12 h-12 mb-4 opacity-10" />
+                                   <p className="text-lg font-serif">No {activeTab} found matching your search.</p>
+                                </div>
+                             </td>
+                          </tr>
+                       )}
                     </tbody>
                  </table>
               </div>

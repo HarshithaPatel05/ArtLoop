@@ -62,6 +62,17 @@ router.get('/', protect, authorize('admin'), async (req, res) => {
     }
 });
 
+// Get Reviews for specific product (Public)
+router.get('/:productId', async (req, res) => {
+    try {
+        const reviews = await Review.find({ product: req.params.productId }).populate('user', 'name');
+        res.json(reviews);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
 // Delete Review (Admin/Owner)
 router.delete('/:id', protect, async (req, res) => {
     try {
