@@ -3,6 +3,8 @@ const router = express.Router();
 const Review = require('../models/Review');
 const Product = require('../models/Product');
 const { protect } = require('../middleware/authMiddleware');
+const authorize = require('../middleware/authorize');
+
 
 // Add Review
 const addReview = async (req, res) => {
@@ -50,17 +52,30 @@ const addReview = async (req, res) => {
 
 router.post('/', protect, addReview);
 
-// Get Reviews
-router.get('/:productId', async (req, res) => {
+// Get All Reviews (Admin)
+router.get('/', protect, authorize('admin'), async (req, res) => {
     try {
-        console.log(`[REVIEWS] GET /api/reviews/${req.params.productId}`);
-        const reviews = await Review.find({
-            product: req.params.productId
-        }).populate('user', 'name');
-
+        const reviews = await Review.find({}).populate('user', 'name email').populate('product', 'name');
         res.json(reviews);
     } catch (error) {
-        console.error('Fetch Reviews Error:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Delete Review (Admin/Owner)
+router.delete('/:id', protect, async (req, res) => {
+    try {
+        const review = await Review.findById(req.params.id);
+        if (!review) return res.status(404).json({ message: 'Review not found' });
+
+        // Only admin or the person who wrote the review can delete it
+        if (req.user.role !== 'admin' && review.user.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: 'Not authorized' });
+        }
+
+        await review.deleteOne();
+        res.json({ message: 'Review removed' });
+    } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });

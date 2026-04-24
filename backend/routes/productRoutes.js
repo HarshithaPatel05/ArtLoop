@@ -27,7 +27,7 @@ router.delete('/:id', protect, authorize('artisan', 'admin'), deleteProduct);
 
 
 // 🔥 REVIEW ROUTE (NEW FEATURE)
-router.post('/:id/reviews', protect, authorize('user', 'buyer', 'admin'), addReview);
+router.post('/:id/reviews', protect, authorize('customer', 'admin'), addReview);
 
 
 module.exports = router;

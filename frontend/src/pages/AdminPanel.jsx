@@ -10,6 +10,7 @@ const AdminPanel = () => {
   const [users, setUsers] = useState([]);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -26,6 +27,7 @@ const AdminPanel = () => {
     fetchUsers();
     fetchProducts();
     fetchOrders();
+    fetchReviews();
   }, [navigate]);
 
   const fetchUsers = async () => {
@@ -51,6 +53,15 @@ const AdminPanel = () => {
     try {
       const { data } = await api.get('/api/orders');
       setOrders(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchReviews = async () => {
+    try {
+      const { data } = await api.get('/api/reviews');
+      setReviews(data);
     } catch (err) {
       console.error(err);
     }
@@ -86,6 +97,16 @@ const AdminPanel = () => {
     }
   };
 
+  const deleteReview = async (id) => {
+    try {
+      await api.delete(`/api/reviews/${id}`);
+      setReviews((prev) => prev.filter((r) => r._id !== id));
+      toast.success('Review deleted');
+    } catch {
+      toast.error('Failed to delete review');
+    }
+  };
+
   const updateOrderStatus = async (id, status) => {
     try {
       const { data } = await api.put(`/api/orders/${id}/status`, { status });
@@ -104,6 +125,9 @@ const AdminPanel = () => {
   );
   const filteredOrders = orders.filter((o) =>
     `${o._id} ${o.paymentMethod || ''} ${o.status || ''}`.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const filteredReviews = reviews.filter((r) =>
+    `${r.comment} ${r.user?.name || ''} ${r.product?.name || ''}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -132,7 +156,7 @@ const AdminPanel = () => {
         <div className="bg-white rounded-[2rem] shadow-xl border border-artloop-clay/10 overflow-hidden">
            {/* Tab Navigation */}
            <div className="flex border-b border-artloop-clay/10 px-8">
-              {['Users', 'Artisans', 'Products', 'Orders', 'Analytics'].map(tab => (
+              {['Users', 'Artisans', 'Products', 'Orders', 'Reviews', 'Analytics'].map(tab => (
                  <button 
                   key={tab}
                   onClick={() => setActiveTab(tab.toLowerCase())}
@@ -236,6 +260,24 @@ const AdminPanel = () => {
                                     <option value="Delivered">Delivered</option>
                                     <option value="Cancelled">Cancelled</option>
                                   </select>
+                               </td>
+                            </tr>
+                         )) : activeTab === 'reviews' ? filteredReviews.map(r => (
+                            <tr key={r._id} className="hover:bg-gray-50 transition-colors">
+                               <td className="py-6 px-4">
+                                  <p className="font-bold text-artloop-brown">"{r.comment}"</p>
+                                  <p className="text-xs text-gray-400">by {r.user?.name || 'Unknown User'}</p>
+                               </td>
+                               <td className="py-6 px-4">
+                                  <span className="text-xs font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-100">Rating: {r.rating}/5</span>
+                               </td>
+                               <td className="py-6 px-4">
+                                  <span className="text-xs font-bold opacity-60 uppercase">{r.product?.name || 'Deleted Product'}</span>
+                               </td>
+                               <td className="py-6 px-4 text-right">
+                                  <button onClick={() => deleteReview(r._id)} className="p-2 text-red-400 hover:bg-red-50 rounded-lg" title="Delete Review">
+                                     <XCircle className="w-5 h-5" />
+                                  </button>
                                </td>
                             </tr>
                          )) : (

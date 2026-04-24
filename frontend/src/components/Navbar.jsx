@@ -71,7 +71,7 @@ const Navbar = () => {
                      <p className="text-sm font-bold text-gray-900 truncate">{user.name || user.email?.split('@')[0]}</p>
                      <p className="text-xs text-gray-500 capitalize">{user.role || 'Buyer'}</p>
                    </div>
-                   <Link to={user.role === 'artisan' ? '/artisan/dashboard' : '/profile'} className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 font-medium">Dashboard</Link>
+                   <Link to={user.role === 'artisan' ? '/artisan/dashboard' : user.role === 'admin' ? '/admin' : '/profile'} className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 font-medium">Dashboard</Link>
                    <Link to="/orders" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 font-medium">Purchases</Link>
                    <button onClick={logout} className="px-4 py-2 mt-1 text-sm text-left text-red-600 hover:bg-red-50 font-medium border-t border-gray-100 w-full">Sign Out</button>
                 </div>
