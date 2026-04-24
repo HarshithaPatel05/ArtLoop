@@ -118,17 +118,18 @@ const AdminPanel = () => {
   };
 
   const filteredUsers = users.filter((u) =>
-    `${u.name} ${u.email} ${u.role}`.toLowerCase().includes(searchTerm.toLowerCase())
+    `${u.name || ''} ${u.email || ''} ${u.role || ''}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const filteredProducts = products.filter((p) =>
-    `${p.name} ${p.category}`.toLowerCase().includes(searchTerm.toLowerCase())
+    `${p.name || ''} ${p.category || ''}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const filteredOrders = orders.filter((o) =>
-    `${o._id} ${o.paymentMethod || ''} ${o.status || ''}`.toLowerCase().includes(searchTerm.toLowerCase())
+    `${o._id || ''} ${o.paymentMethod || ''} ${o.status || ''}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const filteredReviews = reviews.filter((r) =>
-    `${r.comment} ${r.user?.name || ''} ${r.product?.name || ''}`.toLowerCase().includes(searchTerm.toLowerCase())
+    `${r.comment || ''} ${r.user?.name || ''} ${r.product?.name || ''}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
 
   return (
     <div className="min-h-screen bg-artloop-earth py-12">
@@ -281,25 +282,52 @@ const AdminPanel = () => {
                                </td>
                             </tr>
                          )) : (
-                           <tr>
-                             <td className="py-6 px-4" colSpan={4}>
-                               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                 <div className="p-4 border rounded-xl">
-                                   <p className="text-sm text-gray-500">Users</p>
-                                   <p className="text-2xl font-bold">{users.length}</p>
-                                 </div>
-                                 <div className="p-4 border rounded-xl">
-                                   <p className="text-sm text-gray-500">Products</p>
-                                   <p className="text-2xl font-bold">{products.length}</p>
-                                 </div>
-                                 <div className="p-4 border rounded-xl">
-                                   <p className="text-sm text-gray-500">Orders</p>
-                                   <p className="text-2xl font-bold">{orders.length}</p>
-                                 </div>
-                               </div>
-                             </td>
-                           </tr>
-                         )
+                            <tr>
+                              <td className="py-12 px-4" colSpan={4}>
+                                <div className="max-w-4xl mx-auto">
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                                     <div className="bg-artloop-earth/30 p-8 rounded-[2rem] border border-artloop-clay/10">
+                                        <p className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-2">Growth</p>
+                                        <p className="text-4xl font-serif font-bold text-artloop-brown">+{users.filter(u => new Date(u.createdAt) > new Date(Date.now() - 7*24*60*60*1000)).length}</p>
+                                        <p className="text-xs text-gray-400 mt-2">New users this week</p>
+                                     </div>
+                                     <div className="bg-artloop-earth/30 p-8 rounded-[2rem] border border-artloop-clay/10">
+                                        <p className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-2">Activity</p>
+                                        <p className="text-4xl font-serif font-bold text-artloop-brown">{orders.filter(o => o.status === 'Pending').length}</p>
+                                        <p className="text-xs text-gray-400 mt-2">Orders awaiting processing</p>
+                                     </div>
+                                     <div className="bg-artloop-earth/30 p-8 rounded-[2rem] border border-artloop-clay/10">
+                                        <p className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-2">Curation</p>
+                                        <p className="text-4xl font-serif font-bold text-artloop-brown">{products.length}</p>
+                                        <p className="text-xs text-gray-400 mt-2">Items in catalog</p>
+                                     </div>
+                                  </div>
+
+                                  <div className="bg-white p-8 rounded-[2rem] border border-artloop-clay/10">
+                                     <h4 className="text-xl font-serif font-bold text-artloop-brown mb-6">Inventory by Category</h4>
+                                     <div className="space-y-4">
+                                        {['Paintings', 'Jewelry', 'Handloom', 'Home Decor', 'Tribal Crafts', 'Pottery'].map(cat => {
+                                           const count = products.filter(p => p.category === cat).length;
+                                           const percentage = products.length > 0 ? (count / products.length) * 100 : 0;
+                                           return (
+                                              <div key={cat}>
+                                                 <div className="flex justify-between text-sm mb-1">
+                                                    <span className="font-bold text-gray-600">{cat}</span>
+                                                    <span className="text-gray-400">{count} items</span>
+                                                 </div>
+                                                 <div className="w-full bg-gray-100 rounded-full h-2">
+                                                    <div className="bg-artloop-maroon h-2 rounded-full" style={{ width: `${percentage}%` }}></div>
+                                                 </div>
+                                              </div>
+                                           );
+                                        })}
+                                     </div>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )
+
                        }
                     </tbody>
                  </table>
